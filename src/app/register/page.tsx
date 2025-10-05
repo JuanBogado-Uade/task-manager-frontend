@@ -1,6 +1,8 @@
 "use client";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { esContraseñaSegura } from "@/utils/validaciones";
+import Link from "next/link";
 
 export default function RegisterPage() {
   const [error, setError] = useState("");
@@ -17,6 +19,13 @@ export default function RegisterPage() {
     const nombre = formData.get("nombre")?.toString() || "";
     const contraseña = formData.get("contraseña")?.toString() || "";
 
+    // Validación de contraseña segura
+    const errorContraseña = esContraseñaSegura(contraseña);
+    if (errorContraseña) {
+      setError(errorContraseña);
+      return;
+    }
+
     const res = await fetch("https://task-manager-backend-s4ys.onrender.com/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -30,7 +39,6 @@ export default function RegisterPage() {
     }
 
     setSuccess(true);
-
   }
 
   if (success) {
@@ -73,13 +81,25 @@ export default function RegisterPage() {
           placeholder="Contraseña"
           required
           className="border p-2 rounded"
+          minLength={8}
+          maxLength={20}
         />
-
+        <small className="text-gray-500">
+          La contraseña debe tener entre 8 y 20 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.
+        </small>
         <button type="submit" className="bg-blue-600 text-white p-2 rounded">
           Registrarme
         </button>
         {error && <p className="text-red-600 text-center">{error}</p>}
       </form>
+      <div>
+          <p>
+          ¿Ya tienes cuenta?{" "}
+          <Link href="/login" className="text-blue-600 underline hover:text-blue-800">
+            Ingresa
+          </Link>
+        </p>
+      </div>
     </main>
   );
 }
