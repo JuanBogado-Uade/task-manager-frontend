@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
@@ -7,15 +7,15 @@ export default function RegisterPage() {
   const [success, setSuccess] = useState(false);
   const router = useRouter();
 
-  async function handleRegister(e) {
+  async function handleRegister(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     setSuccess(false);
 
-    const formData = new FormData(e.target);
-    const correo = formData.get("correo");
-    const nombre = formData.get("nombre");
-    const contraseña = formData.get("contraseña");
+    const formData = new FormData(e.currentTarget);
+    const correo = formData.get("correo")?.toString() || "";
+    const nombre = formData.get("nombre")?.toString() || "";
+    const contraseña = formData.get("contraseña")?.toString() || "";
 
     const res = await fetch("https://task-manager-backend-s4ys.onrender.com/register", {
       method: "POST",
@@ -30,7 +30,7 @@ export default function RegisterPage() {
     }
 
     setSuccess(true);
-    e.target.reset();
+
   }
 
   if (success) {
