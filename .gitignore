@@ -21,3 +21,7 @@ yarn-error.log*
 # Editor
 .vscode/
 .idea/
+
+# Ignorar archivos de Next.js
+.next/
+.cache
