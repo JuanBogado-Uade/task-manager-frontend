@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 3, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
+    {"offset": {"line": 19, "column": 0}, "map": {"version":3,"sources":["file:///Users/juanmi_b/Desktop/task-manager-frontend/src/app/page.tsx"],"sourcesContent":["import Link from \"next/link\";\n\nexport default function Home() {\n  return (\n    <main className=\"flex min-h-screen flex-col items-center justify-center\">\n      <h1 className=\"text-3xl font-bold\">Bienvenido al Task Manager - Uade Mineros</h1>\n      <div className=\"mt-6 space-x-4\">\n        <Link href=\"/login\" className=\"text-blue-600 underline\">Login</Link>\n        <Link href=\"/register\" className=\"text-green-600 underline\">Register</Link>\n      </div>\n    </main>\n  );\n}"],"names":[],"mappings":";;;;;AAAA;;;AAEe,SAAS;IACtB,qBACE,wRAAC;QAAK,WAAU;;0BACd,wRAAC;gBAAG,WAAU;0BAAqB;;;;;;0BACnC,wRAAC;gBAAI,WAAU;;kCACb,wRAAC,iNAAI;wBAAC,MAAK;wBAAS,WAAU;kCAA0B;;;;;;kCACxD,wRAAC,iNAAI;wBAAC,MAAK;wBAAY,WAAU;kCAA2B;;;;;;;;;;;;;;;;;;AAIpE","debugId":null}}]
+}
