@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/juanmi_b/Desktop/task-manager-frontend/src/app/not-found.tsx"],"sourcesContent":["export default function NotFound() {\n  return (\n    <main className=\"flex min-h-screen items-center justify-center bg-gray-100\">\n      <div className=\"text-center\">\n        <h1 className=\"text-3xl font-bold mb-4\">Página no encontrada</h1>\n        <p className=\"mb-6\">La página que buscas no existe o ha sido movida.</p>\n        <a\n          href=\"/login\"\n          className=\"text-blue-600 hover:underline\"\n        >\n          Volver al login\n        </a>\n      </div>\n    </main>\n  );\n}"],"names":[],"mappings":";;;;;;AAAe,SAAS;IACtB,qBACE,wRAAC;QAAK,WAAU;kBACd,cAAA,wRAAC;YAAI,WAAU;;8BACb,wRAAC;oBAAG,WAAU;8BAA0B;;;;;;8BACxC,wRAAC;oBAAE,WAAU;8BAAO;;;;;;8BACpB,wRAAC;oBACC,MAAK;oBACL,WAAU;8BACX;;;;;;;;;;;;;;;;;AAMT","debugId":null}}]
-}
