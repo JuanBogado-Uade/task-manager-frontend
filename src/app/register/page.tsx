@@ -19,7 +19,6 @@ export default function RegisterPage() {
     const nombre = formData.get("nombre")?.toString() || "";
     const contraseña = formData.get("contraseña")?.toString() || "";
 
-    // Validación de contraseña segura
     const errorContraseña = esContraseñaSegura(contraseña);
     if (errorContraseña) {
       setError(errorContraseña);
@@ -43,62 +42,98 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <main className="max-w-md mx-auto p-6 flex flex-col items-center justify-center min-h-[60vh]">
-        <h1 className="text-2xl font-bold mb-4 text-green-700">¡Registro exitoso!</h1>
-        <p className="mb-6 text-center">Ahora puedes iniciar sesión con tus credenciales.</p>
-        <button
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
-          onClick={() => router.push("/login")}
-        >
-          Ir al login
-        </button>
+      <main className="flex min-h-screen items-center justify-center bg-avocado-200 px-4">
+        <div className="bg-white shadow-lg rounded-2xl p-8 max-w-md w-full text-center">
+          <h1 className="text-2xl font-bold mb-4 text-green-700">¡Registro exitoso!</h1>
+          <p className="mb-6 text-gray-700">
+            Ahora puedes iniciar sesión con tus credenciales.
+          </p>
+          <button
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            onClick={() => router.push("/login")}
+          >
+            Ir al login
+          </button>
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="max-w-md mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Registro</h1>
+    <main className="flex min-h-screen items-center justify-center bg-avocado-200 px-4">
+      <div className="bg-white shadow-lg rounded-2xl p-8 max-w-md w-full">
+        <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
+          Registro
+        </h1>
 
-      <form onSubmit={handleRegister} className="flex flex-col gap-3">
-        <input
-          name="correo"
-          type="email"
-          placeholder="Correo"
-          required
-          className="border p-2 rounded"
-        />
-        <input
-          name="nombre"
-          type="text"
-          placeholder="Nombre"
-          required
-          className="border p-2 rounded"
-        />
-        <input
-          name="contraseña"
-          type="password"
-          placeholder="Contraseña"
-          required
-          className="border p-2 rounded"
-          minLength={8}
-          maxLength={20}
-        />
-        <small className="text-gray-500">
-          La contraseña debe tener entre 8 y 20 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.
-        </small>
-        <button type="submit" className="bg-blue-600 text-white p-2 rounded">
-          Registrarme
-        </button>
-        {error && <p className="text-red-600 text-center">{error}</p>}
-      </form>
-      <div>
-          <p>
-          ¿Ya tienes cuenta?{" "}
-          <Link href="/login" className="text-blue-600 underline hover:text-blue-800">
-            Ingresa
-          </Link>
-        </p>
+        <form onSubmit={handleRegister} className="flex flex-col gap-2">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Correo electrónico
+          </label>
+          <input
+            name="correo"
+            type="email"
+            placeholder="Ejemplo@uade.com"
+            required
+            className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition placeholder:italic"
+          />
+          <label
+            htmlFor="nombre"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Nombre de usuario
+          </label>
+          <input
+            name="nombre"
+            type="text"
+            placeholder="Steve"
+            required
+            className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition placeholder:italic"
+          />
+          <label
+            htmlFor="contraseña"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Contraseña
+          </label>
+          <input
+            name="contraseña"
+            type="password"
+            placeholder="••••••••"
+            required
+            className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition placeholder:italic"
+            minLength={8}
+            maxLength={20}
+          />
+          <small className="text-gray-500 text-sm">
+            La contraseña debe tener entre 8 y 20 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.
+          </small>
+          <button
+            type="submit"
+            className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"
+          >
+            Registrarme
+          </button>
+
+          {error && (
+            <p className="text-red-600 text-center text-sm mt-2">{error}</p>
+          )}
+        </form>
+
+        <div className="text-center mt-6">
+          <p className="text-gray-700">
+            ¿Ya tenes cuenta?{" "}
+            <Link
+              href="/login"
+              className="text-blue-600 font-medium hover:text-blue-800 hover:underline transition"
+            >
+              Ingresa
+            </Link>
+          </p>
+        </div>
       </div>
     </main>
   );
