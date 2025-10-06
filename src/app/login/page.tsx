@@ -8,6 +8,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [intentos, setIntentos] = useState(0);
   const [bloqueado, setBloqueado] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { setUserName } = useUser();
 
@@ -16,7 +17,7 @@ export default function LoginPage() {
       setError("Demasiados intentos fallidos. Intenta más tarde.");
       return;
     }
-
+    setLoading(true); 
     const correo = formData.get("correo");
     const contraseña = formData.get("contraseña");
 
@@ -53,7 +54,8 @@ export default function LoginPage() {
       return;
     }
 
-    // Login exitoso: reiniciar intentos y limpiar error
+    // Login exitoso
+    setLoading(false);
     setIntentos(0);
     setBloqueado(false);
     setError("");
@@ -63,61 +65,101 @@ export default function LoginPage() {
     router.push("/dashboard");
   }
 
-  // Limpiar error al escribir en los inputs
   function handleInputChange() {
     if (error) setError("");
   }
 
   return (
-    <main className="max-w-md mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Login</h1>
-      <form
-        action={async (formData) => {
-          await handleLogin(formData);
-        }}
-        className="flex flex-col gap-4 max-w-sm mx-auto mt-20"
-      >
-        <input
-          type="email"
-          name="correo"
-          placeholder="Correo"
-          className="border rounded px-3 py-2"
-          required
-          disabled={bloqueado}
-          onChange={handleInputChange}
-        />
-        <input
-          type="password"
-          name="contraseña"
-          placeholder="Contraseña"
-          className="border rounded px-3 py-2"
-          required
-          disabled={bloqueado}
-          onChange={handleInputChange}
-        />
-        <button
-          type="submit"
-          className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-          disabled={bloqueado}
+    <main className="min-h-screen flex items-center justify-center bg-avocado-200 p-6">
+      <div className="bg-white backdrop-blur-sm border border-white/50 shadow-xl rounded-2xl p-8 w-full max-w-md transition-transform ">
+        {/* Header */}
+        <header className="mb-8 text-center">
+          <h2 className="text-3xl font-bold text-gray-800">Iniciar sesión</h2>
+          <p className="text-gray-600 mt-2">
+            Introduce tus credenciales para acceder a tu cuenta
+          </p>
+        </header>
+
+        {/* Formulario */}
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target as HTMLFormElement);
+            await handleLogin(formData);
+          }}
+          className="space-y-5"
         >
-          Iniciar sesión
-        </button>
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Correo electrónico
+            </label>
+            <input
+              id="email"
+              type="email"
+              name="correo"
+              placeholder="ejemplo@correo.com"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition disabled:opacity-50 placeholder:italic"
+              required
+              disabled={bloqueado}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="contraseña"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Contraseña
+            </label>
+            <input
+              id="contraseña"
+              type="password"
+              name="contraseña"
+              placeholder="••••••••"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition disabled:opacity-50 placeholder:italic"
+              required
+              disabled={bloqueado}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <button
+            type="submit"
+            className={`w-full py-2 px-4 rounded-lg font-medium text-white transition ${
+              bloqueado
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 hover:scale-[1.02]"
+            }`}
+            disabled={bloqueado}
+          >
+      {loading ? "Iniciando..." : "Iniciar sesión"}
+          </button>
+        </form>
+
+        {/* Mensajes */}
         {intentos > 0 && !bloqueado && (
-          <p className="text-orange-600 text-center mt-2">
+          <p className="text-orange-600 text-center mt-4">
             Intentos fallidos: {intentos} / 4
           </p>
         )}
-        {error && (
-          <p className="text-red-600 text-center mt-2">{error}</p>
-        )}
-      </form>
-      <div className="mt-6 flex flex-col items-center gap-2">
-        <p>
-          ¿No tienes cuenta?{" "}
-          <Link href="/register" className="text-blue-600 underline hover:text-blue-800">
-            Regístrate aquí
-          </Link>
-        </p>
+        {error && <p className="text-red-600 text-center mt-2">{error}</p>}
+
+        {/* Footer */}
+        <footer className="mt-6 text-center">
+          <p className="text-gray-700">
+            ¿No teenes cuenta?{" "}
+            <Link
+              href="/register"
+              className="text-blue-600 font-medium hover:text-blue-800 hover:underline transition"
+            >
+              Regístrate aca
+            </Link>
+          </p>
+        </footer>
       </div>
     </main>
   );
