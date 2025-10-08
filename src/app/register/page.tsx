@@ -3,14 +3,17 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { esContraseñaSegura } from "@/utils/validaciones";
 import Link from "next/link";
+import PasswordInput from "../components/auth/PasswordInput";
 
 export default function RegisterPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   async function handleRegister(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setLoading(true);
     setError("");
     setSuccess(false);
 
@@ -32,6 +35,7 @@ export default function RegisterPage() {
     });
 
     if (!res.ok) {
+      setLoading(false);
       const errorMessage = await res.text();
       setError(errorMessage || "Error al registrar usuario");
       return;
@@ -93,21 +97,7 @@ export default function RegisterPage() {
             required
             className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition placeholder:italic"
           />
-          <label
-            htmlFor="contraseña"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Contraseña
-          </label>
-          <input
-            name="contraseña"
-            type="password"
-            placeholder="••••••••"
-            required
-            className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition placeholder:italic"
-            minLength={8}
-            maxLength={20}
-          />
+          <PasswordInput/>
           <small className="text-gray-500 text-sm">
             La contraseña debe tener entre 8 y 20 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.
           </small>
@@ -115,7 +105,7 @@ export default function RegisterPage() {
             type="submit"
             className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"
           >
-            Registrarme
+             {loading ? "Registrando..." : "Registrarme"}
           </button>
 
           {error && (
