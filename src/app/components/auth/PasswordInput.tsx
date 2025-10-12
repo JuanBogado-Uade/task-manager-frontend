@@ -44,6 +44,7 @@ export default function PasswordInput({
           value={value}
           disabled={disabled}
           required={required}
+          autoComplete="new-password"
           onChange={onChange}
           minLength={8}
           maxLength={20}
