@@ -19,84 +19,84 @@ export default function LoginForm() {
         const correo = formData.get("correo");
         const contraseña = formData.get("contraseña");
 
-        const res = await fetch("https://task-manager-backend-s4ys.onrender.com/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ correo, contraseña }),
-        });
+        try {
+            const res = await fetch("https://task-manager-backend-s4ys.onrender.com/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ correo, contraseña }),
+            });
 
-        if (!res.ok) {
+            if (!res.ok) {
+                setLoading(false);
+                const errorResponse = await res.json(); // Parsear el JSON de la respuesta
+                const errorMessage = errorResponse.error || "Error desconocido"; // Extraer el mensaje de error
+                return handleLoginError(errorMessage);
+            }
+
+            const result = await res.json();
+            setUserName(result.usuario);
+            router.push("/dashboard");
+        } catch (err) {
+            setError("Error de conexión. Intenta nuevamente.");
             setLoading(false);
-            const errorMessage = await res.text();
-            return handleLoginError(errorMessage);
         }
-
-        const result = await res.json();
-        setUserName(result.usuario);
-        router.push("/dashboard");
     }
 
-    function handleLoginError(errorMessage: string) {
-        if (
-            errorMessage.toLowerCase().includes("contraseña incorrecta") ||
-            errorMessage.toLowerCase().includes("usuario no encontrado")
-        ) {
-            setIntentos((prev) => {
-                const nuevos = prev + 1;
-                if (nuevos >= 4) setBloqueado(true);
-                return nuevos;
-            });
-            setError(
-                errorMessage.toLowerCase().includes("contraseña incorrecta")
-                    ? "Contraseña incorrecta"
-                    : "Usuario no encontrado"
-            );
-        } else {
-            setError("Error al iniciar sesión");
+    function handleLoginError(message: string) {
+        setIntentos((prev) => prev + 1);
+        if (intentos + 1 >= 3) {
+            setBloqueado(true);
+            // Ver como lo hace el back
+            setTimeout(() => setBloqueado(false), 30000);
         }
+        setError(message);
     }
 
     return (
-
         <form
             onSubmit={(e) => {
                 e.preventDefault();
-                const formData = new FormData(e.target as HTMLFormElement);
+                const formData = new FormData(e.currentTarget);
                 handleLogin(formData);
             }}
-            className="space-y-5"
+            className="flex flex-col gap-4"
         >
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Correo electrónico
-                </label>
-                <input
-                    name="correo"
-                    type="email"
-                    placeholder="ejemplo@correo.com"
-                    disabled={bloqueado}
-                    required
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition placeholder:italic"
-                />
-            </div>
+            {/* Campo de correo electrónico */}
+            <label htmlFor="correo" className="block text-sm font-medium text-gray-700">
+                Correo electrónico
+            </label>
+            <input
+                id="correo"
+                name="correo"
+                type="email"
+                placeholder="Ejemplo@uade.com"
+                required
+                disabled={loading} // Deshabilitado si loading es true
+                className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition placeholder:italic"
+            />
 
-            <PasswordInput disabled={bloqueado} />
+            {/* Campo de contraseña */}
+            <PasswordInput
+                id="contraseña"
+                name="contraseña"
+                placeholder="Introduce tu contraseña"
+                disabled={loading} // Deshabilitado si loading es true
+                required
+            />
 
+            {/* Botón de envío */}
             <button
                 type="submit"
-                className={`w-full py-2 px-4 rounded-lg font-medium text-white transition ${bloqueado
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-blue-600 hover:bg-blue-700 hover:scale-[1.02]"
-                    }`}
-                disabled={bloqueado}
+                disabled={loading} // Deshabilitado si loading es true
+                className={`bg-blue-600 text-white p-2 rounded-lg transition-colors duration-200 ${
+                    loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
+                }`}
             >
-                {loading ? "Iniciando..." : "Iniciar sesión"}
+                {loading ? "Iniciando sesión..." : "Iniciar sesión"}
             </button>
 
-            {error && <p className="text-red-600 text-center">{error}</p>}
-            {intentos > 0 && !bloqueado && (
-                <p className="text-orange-600 text-center">Intentos fallidos: {intentos}/4</p>
-            )}
+            {/* Mensaje de error */}
+            {error && <p className="text-red-600 text-sm">{error}</p>}
         </form>
     );
 }

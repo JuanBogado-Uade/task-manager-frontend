@@ -5,44 +5,63 @@ import { esContraseñaSegura } from "@/utils/validaciones";
 import Link from "next/link";
 import PasswordInput from "../components/auth/PasswordInput";
 
+interface FormData {
+  correo: string;
+  nombre: string;
+  contraseña: string;
+}
+
 export default function RegisterPage() {
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState<FormData>({
+    correo: "",
+    nombre: "",
+    contraseña: "",
+  });
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
   const router = useRouter();
 
-  async function handleRegister(e: FormEvent<HTMLFormElement>) {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     setSuccess(false);
 
-    const formData = new FormData(e.currentTarget);
-    const correo = formData.get("correo")?.toString() || "";
-    const nombre = formData.get("nombre")?.toString() || "";
-    const contraseña = formData.get("contraseña")?.toString() || "";
-
-    const errorContraseña = esContraseñaSegura(contraseña);
+    // Validar contraseña antes de enviar
+    const errorContraseña = esContraseñaSegura(formData.contraseña);
     if (errorContraseña) {
-      setError(errorContraseña);
-      return;
-    }
-
-    const res = await fetch("https://task-manager-backend-s4ys.onrender.com/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ correo, nombre, contraseña }),
-    });
-
-    if (!res.ok) {
       setLoading(false);
-      const errorMessage = await res.text();
-      setError(errorMessage || "Error al registrar usuario");
+      setError(errorContraseña);
+      setLoading(false);
       return;
     }
 
-    setSuccess(true);
-  }
+    try {
+      const res = await fetch("https://task-manager-backend-s4ys.onrender.com/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) {
+        const errorMessage = await res.text();
+        setError(errorMessage || "Error al registrar usuario");
+        setLoading(false);
+        return;
+      }
+
+      setSuccess(true);
+    } catch (err) {
+      setError("Error de conexión. Inténtalo nuevamente.");
+      setLoading(false);
+    }
+  };
 
   if (success) {
     return (
@@ -70,9 +89,10 @@ export default function RegisterPage() {
           Registro
         </h1>
 
-        <form onSubmit={handleRegister} className="flex flex-col gap-2">
+        <form onSubmit={handleRegister} className="flex flex-col gap-2" >
+          {/* Campo de correo electrónico */}
           <label
-            htmlFor="email"
+            htmlFor="correo"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
             Correo electrónico
@@ -82,8 +102,15 @@ export default function RegisterPage() {
             type="email"
             placeholder="Ejemplo@uade.com"
             required
+            autoComplete="off"
+            aria-autocomplete="none"
+            value={formData.correo}
+            onChange={handleInputChange}
+            disabled={loading} // Deshabilitado si loading es true
             className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition placeholder:italic"
           />
+
+          {/* Campo de nombre de usuario */}
           <label
             htmlFor="nombre"
             className="block text-sm font-medium text-gray-700 mb-1"
@@ -95,32 +122,54 @@ export default function RegisterPage() {
             type="text"
             placeholder="Steve"
             required
+            autoComplete="none"
+            aria-autocomplete="none"
+            value={formData.nombre}
+            onChange={handleInputChange}
+            disabled={loading} // Deshabilitado si loading es true
             className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition placeholder:italic"
           />
-          <PasswordInput/>
+
+          {/* Campo de contraseña */}
+          <PasswordInput
+            id="contraseña"
+            name="contraseña"
+            placeholder="Introduce tu contraseña"
+            disabled={loading} // Deshabilitado si loading es true
+            required={true}
+            value={formData.contraseña}
+            onChange={handleInputChange}
+          />
           <small className="text-gray-500 text-sm">
             La contraseña debe tener entre 8 y 20 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.
           </small>
+
+          {/* Botón de envío */}
           <button
             type="submit"
-            className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            disabled={loading} // Deshabilitado si loading es true
+            className={`bg-blue-600 text-white p-2 rounded-lg transition-colors duration-200 ${
+              loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
+            }`}
           >
-             {loading ? "Registrando..." : "Registrarme"}
+            {loading ? "Registrando..." : "Registrarme"}
           </button>
 
+          {/* Mensaje de error */}
           {error && (
             <p className="text-red-600 text-center text-sm mt-2">{error}</p>
           )}
         </form>
 
+        {/* Enlace para redirigir al login */}
         <div className="text-center mt-6">
           <p className="text-gray-700">
-            ¿Ya tenes cuenta?{" "}
+            ¿Ya tienes cuenta?{" "}
             <Link
               href="/login"
               className="text-blue-600 font-medium hover:text-blue-800 hover:underline transition"
             >
-              Ingresa
+              Ingresa aquí
             </Link>
           </p>
         </div>
