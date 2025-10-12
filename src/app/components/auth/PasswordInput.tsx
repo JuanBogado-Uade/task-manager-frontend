@@ -10,7 +10,6 @@ interface PasswordInputProps {
   value?: string;
   disabled?: boolean;
   required?: boolean;
-  ariaAutocomplete?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -22,7 +21,6 @@ export default function PasswordInput({
   value,
   disabled = false,
   required = true,
-  ariaAutocomplete="none",
   onChange,
 }: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
@@ -46,7 +44,6 @@ export default function PasswordInput({
           value={value}
           disabled={disabled}
           required={required}
-          aria-autocomplete={ariaAutocomplete}
           autoComplete="new-password"
           onChange={onChange}
           minLength={8}
