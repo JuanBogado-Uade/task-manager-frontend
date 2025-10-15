@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/context/UserContext";
 import PasswordInput from "./PasswordInput";
@@ -83,6 +83,9 @@ export default function LoginForm() {
     setError(message);
   }
 
+useEffect(() => {
+  console.log("reCAPTCHA siteKey:", process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY);
+}, []);
   return (
     <form
       onSubmit={(e) => {
