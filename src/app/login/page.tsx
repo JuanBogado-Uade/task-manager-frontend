@@ -23,6 +23,15 @@ export default function LoginPage() {
               Regístrate aca
             </Link>
           </p>
+          <p>
+            ¿Olvidaste tu contraseña?{" "}
+            <Link
+              href="/reset"
+              className="text-blue-600 font-medium hover:text-blue-800 hover:underline transition"
+            >
+              Restablecela aca
+            </Link>
+          </p>
         </footer>
       </div>
     </main>
