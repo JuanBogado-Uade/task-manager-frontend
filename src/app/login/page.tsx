@@ -15,7 +15,7 @@ export default function LoginPage() {
         <LoginForm />
                <footer className="mt-6 text-center">
           <p className="text-gray-700">
-            ¿No teenes cuenta?{" "}
+            ¿No tenes cuenta?{" "}
             <Link
               href="/register"
               className="text-blue-600 font-medium hover:text-blue-800 hover:underline transition"
