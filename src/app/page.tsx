@@ -119,11 +119,6 @@ export default function HomePage() {
               desc="Protección de datos con encriptación end-to-end y cumplimiento normativo."
             />
             <Feature
-              icon={Zap}
-              title="Automatización Inteligente"
-              desc="Reduce tareas repetitivas con automatizaciones personalizadas y flujos inteligentes."
-            />
-            <Feature
               icon={Clock}
               title="Seguimiento Temporal"
               desc="Registra tiempos, establece deadlines y optimiza la planificación de recursos."
@@ -132,11 +127,6 @@ export default function HomePage() {
               icon={Target}
               title="Prioridades y Objetivos"
               desc="Define prioridades claras y alinea tareas con los objetivos estratégicos del equipo."
-            />
-            <Feature
-              icon={Bell}
-              title="Notificaciones Inteligentes"
-              desc="Recibe alertas personalizadas sobre cambios importantes y deadlines próximos."
             />
           </div>
         </div>
