@@ -7,26 +7,33 @@ export default function HomePage() {
     <main className="min-h-screen bg-avocado-200">
       {/* Header sticky */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-white/30">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Image src="/logo.png" alt="QALogix Logo" width={192} height={192} className="rounded-md object-contain" />
+            <Image
+              src="/logo.png"
+              alt="QALogix Logo"
+              width={140}
+              height={140}
+              className="rounded-md object-contain w-24 sm:w-36"
+            />
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3">
             <Link
               href="/login"
-              className="px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold shadow hover:bg-emerald-700 transition"
+              className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base rounded-lg bg-emerald-600 text-white font-semibold shadow hover:bg-emerald-700 transition"
             >
               Iniciar sesión
             </Link>
             <Link
               href="/register"
-              className="px-4 py-2 rounded-lg border border-emerald-600 text-emerald-600 font-semibold hover:bg-emerald-50 transition"
+              className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base rounded-lg border border-emerald-600 text-emerald-600 font-semibold hover:bg-emerald-50 transition"
             >
               Registrarse
             </Link>
           </div>
         </div>
       </header>
+
 
       {/* Hero Section */}
       <section className="flex flex-col items-center justify-center text-center px-6 py-24 sm:py-32">
