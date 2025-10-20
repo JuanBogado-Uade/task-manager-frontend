@@ -50,12 +50,12 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
     }
 
     // Obtener el token del captcha
-    const captchaResponse = window.grecaptcha?.getResponse() ?? "";
-    if (!captchaResponse) {
-      setError("Por favor completa el captcha.");
-      setLoading(false);
-      return;
-    }
+    // const captchaResponse = window.grecaptcha?.getResponse() ?? "";
+    // if (!captchaResponse) {
+    //   setError("Por favor completa el captcha.");
+    //   setLoading(false);
+    //   return;
+    // }
 
     try {
       const res = await fetch(
@@ -63,14 +63,15 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...formData, captcha: captchaResponse }),
+          body: JSON.stringify({ ...formData}),
         }
       );
 
       if (!res.ok) {
-        const errorMessage = await res.text();
-        setError(errorMessage || "Error al registrar usuario.");
         setLoading(false);
+        const errorResponse = await res.json();
+        const errorMessage = errorResponse.error || "Error desconocido";
+        setError(errorMessage);
         return;
       }
 
@@ -139,17 +140,17 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
         La contraseña debe tener entre 8 y 20 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.
       </small>
 
-      <ReCAPTCHA
+      {/* <ReCAPTCHA
         sitekey={siteKey}
         onChange={() => setCaptchaOk(true)}
         onExpired={() => setCaptchaOk(false)}
-      />
+      /> */}
 
       <button
         type="submit"
-        disabled={loading || !captchaOk}
+        disabled={loading }
         className={`bg-blue-600 text-white p-2 rounded-lg transition ${
-          loading || !captchaOk ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
+          loading  ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
         }`}
       >
         {loading ? "Registrando..." : "Registrarme"}
