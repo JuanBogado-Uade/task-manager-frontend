@@ -1,8 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PasswordInput from "./PasswordInput";
-import ReCAPTCHA from "react-google-recaptcha";
+// import ReCAPTCHA from "react-google-recaptcha";
 import { useProyectoStore } from "@/store/proyectosStore";
 
 // Declaración global para tipado de grecaptcha
@@ -43,6 +43,8 @@ export default function LoginForm() {
 
       // Si login fue exitoso, obtenemos el user desde el store
       const user = useProyectoStore.getState().currentUser;
+      console.log("user after login:", user);
+      
       setCurrentUser(user);
       console.log(user);
       
@@ -54,8 +56,8 @@ export default function LoginForm() {
 
       console.log("Usuario autenticado:", user);
       router.push("/dashboard");
-    } catch (err: any) {
-      handleLoginError(err.message || "Error desconocido");
+    } catch{
+      handleLoginError("Error desconocido");
     } finally {
       setLoading(false);
     }
@@ -70,9 +72,9 @@ export default function LoginForm() {
     setError(message);
   }
 
-  useEffect(() => {
-    console.log("reCAPTCHA siteKey:", process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY);
-  }, []);
+  // useEffect(() => {
+  //   console.log("reCAPTCHA siteKey:", process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY);
+  // }, []);
 
   return (
     <form

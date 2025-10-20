@@ -33,7 +33,12 @@ console.log(`Navbar - currentUser: ${currentUser}`);
         <div className="flex items-center gap-4">
           {currentUser && (
             <>
-              <span className="text-sm">@{currentUser}</span>
+              {currentUser && (
+                <span className="text-sm">
+                  Hola, <strong>{JSON.stringify(currentUser)}</strong>
+                </span>
+              )
+              }
               <Button
                 variant="secondary"
                 size="sm"
