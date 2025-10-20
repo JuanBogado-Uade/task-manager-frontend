@@ -1,4 +1,17 @@
-// "use client";
+"use client";
+
+export default function BoardView() {
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
+        <div className="bg-white p-6 rounded-2xl shadow-lg text-center max-w-md w-full">
+            <h2 className="text-xl font-bold mb-2">Funcionalidad en desarrollo</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+            La vista del tablero está en construcción. Por favor, vuelve más tarde.
+            </p>
+        </div>
+        </div>
+    );
+    }
 // import { useState, useEffect } from "react";
 // import { useParams, useRouter } from "next/navigation";
 // // import { useBoardStore } from "@/store/boardStore";
