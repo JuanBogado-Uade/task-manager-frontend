@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PasswordInput from "@/app/components/auth/PasswordInput";
+import { esContraseñaSegura } from "@/utils/validaciones";
 
 export default function ResetPasswordPage() {
   const [correo, setCorreo] = useState("");
@@ -27,6 +28,12 @@ export default function ResetPasswordPage() {
       return setError("Las contraseñas no coinciden.");
     }
 
+    const errorContraseña = esContraseñaSegura(nuevaContraseña);
+    if (errorContraseña) {
+      setError(errorContraseña);
+      setLoading(false);
+      return ;
+    }
     setLoading(true);
 
     try {
@@ -42,7 +49,6 @@ export default function ResetPasswordPage() {
 
       if (res.ok) {
         setSuccess(true);
-        setTimeout(() => router.push("/login"), 2000);
       } else {
         const data = await res.json().catch(() => null);
         setError(data?.error || "Error al actualizar la contraseña.");
