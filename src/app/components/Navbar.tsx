@@ -33,13 +33,12 @@ console.log(`Navbar - currentUser: ${currentUser}`);
         <div className="flex items-center gap-4">
           {currentUser && (
             <>
-              {currentUser && (
+  {currentUser && (
                 <span className="text-sm">
                   Hola, <strong>{JSON.stringify(currentUser)}</strong>
                 </span>
               )
-              }
-              <Button
+              }              <Button
                 variant="secondary"
                 size="sm"
                 onClick={handleLogout}

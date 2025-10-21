@@ -56,8 +56,8 @@ export default function LoginForm() {
 
       console.log("Usuario autenticado:", user);
       router.push("/dashboard");
-    } catch{
-      handleLoginError("Error desconocido");
+    } catch {
+      handleLoginError( "Error desconocido");
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,4 @@
-// // import { Board } from "@/store/boardStore";
+// import { Board } from "@/store/boardStore";
 // import { Card } from "@/app/components/ui/card";
 // import { Trash2 } from "lucide-react";
 // import { Button } from "@/app/components/ui/button";
