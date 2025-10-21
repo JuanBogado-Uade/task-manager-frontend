@@ -91,17 +91,6 @@ export default function BoardView() {
 //   const [activeCard, setActiveCard] = useState<any>(null);
 // console.log("Board ID from params:", boardId);
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
-      <div className="bg-white p-6 rounded-2xl shadow-lg text-center max-w-md w-full">
-        <h2 className="text-xl font-bold mb-2">Funcionalidad en desarrollo</h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          La vista del tablero está en construcción. Por favor, vuelve más tarde.
-        </p>
-      </div>
-    </div>
-  );
-}
 
 //   const params = useParams();
 //   const router = useRouter();
