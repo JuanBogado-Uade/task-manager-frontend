@@ -20,24 +20,77 @@
 // } from "@dnd-kit/core";
 
 export default function BoardView() {
-// const params = useParams();
-// const router = useRouter();
-// const boardId = params?.id as string | undefined;
-// console.log(params);
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
+        <div className="bg-white p-6 rounded-2xl shadow-lg text-center max-w-md w-full">
+            <h2 className="text-xl font-bold mb-2">Funcionalidad en desarrollo</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+            La vista del tablero está en construcción. Por favor, vuelve más tarde.
+            </p>
+        </div>
+        </div>
+    );
+    }
+// import { useState, useEffect } from "react";
+// import { useParams, useRouter } from "next/navigation";
+// // import { useBoardStore } from "@/store/boardStore";
+// import { useProyectoStore } from "@/store/proyectosStore";
+// import { Navbar } from "@/app/components/Navbar";
+// import { ListColumn } from "@/app/components/ListColumn";
+// import { Button } from "@/app/components/ui/button";
+// import { Input } from "@/app/components/ui/input";
+// import { Plus, ArrowLeft } from "lucide-react";
+// import { Card } from "@/app/components/ui/card";
+// import {
+//   DndContext,
+//   DragEndEvent,
+//   DragOverlay,
+//   DragStartEvent,
+//   PointerSensor,
+//   useSensor,
+//   useSensors,
+// } from "@dnd-kit/core";
 
+// export default function BoardView() {
+// // const params = useParams();
+// // const router = useRouter();
+// // const boardId = params?.id as string | undefined;
+// // console.log(params);
+
+// // console.log("Board ID from params:", boardId);
+
+// //   return (
+// //     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
+// //       <div className="bg-white p-6 rounded-2xl shadow-lg text-center max-w-md w-full">
+// //         <h2 className="text-xl font-bold mb-2">Funcionalidad en desarrollo</h2>
+// //         <p className="text-sm text-muted-foreground mb-4">
+// //           La vista del tablero está en construcción. Por favor, vuelve más tarde.
+// //         </p>
+// //       </div>
+// //     </div>
+// //   );
+
+
+//   const params = useParams();
+//   const router = useRouter();
+//   const boardId = params?.id as string | undefined;
+
+//   const {
+//     boards,
+//     createList,
+//     deleteList,
+//     updateListTitle,
+//     createCard,
+//     deleteCard,
+//     updateCardTitle,
+//     moveCard,
+//   } = useBoardStore();
+
+//   const [isCreatingList, setIsCreatingList] = useState(false);
+//   const [newListTitle, setNewListTitle] = useState("");
+//   const [activeCard, setActiveCard] = useState<any>(null);
 // console.log("Board ID from params:", boardId);
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
-      <div className="bg-white p-6 rounded-2xl shadow-lg text-center max-w-md w-full">
-        <h2 className="text-xl font-bold mb-2">Funcionalidad en desarrollo</h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          La vista del tablero está en construcción. Por favor, vuelve más tarde.
-        </p>
-      </div>
-    </div>
-  );
-}
 
 //   const params = useParams();
 //   const router = useRouter();
