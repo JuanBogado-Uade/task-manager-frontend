@@ -43,6 +43,8 @@ export default function LoginForm() {
 
       // Si login fue exitoso, obtenemos el user desde el store
       const user = useProyectoStore.getState().currentUser;
+      console.log("user after login:", user);
+      
       setCurrentUser(user);
       console.log(user);
       

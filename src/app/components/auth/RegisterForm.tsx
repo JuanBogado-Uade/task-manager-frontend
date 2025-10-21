@@ -2,7 +2,7 @@
 import { useState } from "react";
 import PasswordInput from "./PasswordInput";
 import { esContraseñaSegura } from "@/utils/validaciones";
-import ReCAPTCHA from "react-google-recaptcha";
+// import ReCAPTCHA from "react-google-recaptcha";
 
 // Declaración global para tipado de grecaptcha
 declare global {
@@ -27,9 +27,9 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [captchaOk, setCaptchaOk] = useState(false);
+  // const [captchaOk, setCaptchaOk] = useState(false);
 
-  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string;
+  // const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
