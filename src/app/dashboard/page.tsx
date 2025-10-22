@@ -24,22 +24,22 @@ export default function Dashboard() {
   const [newBoardTitle, setNewBoardTitle] = useState("");
   const [creating, setCreating] = useState(false);
 
-  /** 🧮 Memorizar proyectos del usuario actual para evitar recomputar */
+  // Memorizar proyectos del usuario actual para evitar recomputar 
   const userProyectos = useMemo(() => {
     if (!currentUser) return [];
-    return proyectos.filter((p) => p.userId === currentUser.id);
+    return proyectos;
   }, [proyectos, currentUser]);
 
-  /** 🪄 Cargar proyectos solo si el store está vacío o el usuario cambió */
   useEffect(() => {
-    if (currentUser && proyectos.length === 0) {
-      fetchProyectos().catch((err) =>
-        console.error("Error cargando proyectos:", err)
-      );
-    }
-  }, [currentUser]); // ⚠️ fetchProyectos no se incluye para evitar loops
+    if (!currentUser) return;
+    fetchProyectos().catch((err) =>
+      console.error("Error cargando proyectos:", err)
+    );
+  }, [currentUser, fetchProyectos]);
 
-  /** 🧠 Función optimizada para crear proyectos */
+  console.log(proyectos);
+
+  // Función para crear proyectos 
   const handleCreateBoard = useCallback(async () => {
     const nombre = newBoardTitle.trim();
     if (!nombre || !currentUser) return;
@@ -49,6 +49,7 @@ export default function Dashboard() {
       await crearProyecto(nombre, "Descripción por defecto", null);
       setNewBoardTitle("");
       setIsCreating(false);
+      await fetchProyectos();
     } catch (error) {
       console.error("Error creando proyecto:", error);
     } finally {
@@ -56,7 +57,7 @@ export default function Dashboard() {
     }
   }, [newBoardTitle, currentUser, crearProyecto]);
 
-  /** ⌨️ Manejo de teclado */
+  // Manejo de teclado 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") handleCreateBoard();
     if (e.key === "Escape") {
@@ -65,17 +66,24 @@ export default function Dashboard() {
     }
   };
 
-  /** 🗑️ Eliminar proyecto */
+  // Eliminar proyecto
   const handleDelete = useCallback(
     async (id: number) => {
+      if (!currentUser) {
+        console.error("Usuario no autenticado");
+        return;
+      }
       if (!confirm("¿Eliminar este proyecto?")) return;
       try {
-        await eliminarProyecto(id);
+        console.log( "El correo  ",currentUser.correo);
+        
+        await eliminarProyecto(id, currentUser.correo);
       } catch (err) {
         console.error("Error eliminando proyecto:", err);
       }
+      await fetchProyectos();
     },
-    [eliminarProyecto]
+    [eliminarProyecto, currentUser]
   );
 
   return (
@@ -93,7 +101,7 @@ export default function Dashboard() {
         </header>
 
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {/* 🟩 Estado vacío */}
+          {/* SI ESTA VACIO MUESTRA ESTO */}
           {userProyectos.length === 0 && (
             <Card className="p-8 border border-emerald-300/40 bg-emerald-50/70 rounded-2xl shadow-sm">
               <p className="text-emerald-800/70 text-sm">
@@ -102,7 +110,7 @@ export default function Dashboard() {
             </Card>
           )}
 
-          {/* 🧱 Listado de proyectos */}
+          {/* LISTADO DE PROYECTOS */}
           {userProyectos.map((proyecto) => (
             <Card
               key={proyecto.id}
@@ -140,7 +148,7 @@ export default function Dashboard() {
             </Card>
           ))}
 
-          {/* ➕ Crear nuevo tablero */}
+          {/* CREAR TABLERO */}
           {isCreating ? (
             <Card className="h-36 p-5 flex flex-col gap-3 border border-emerald-300/50 bg-emerald-50/70 rounded-2xl shadow-md">
               <Input

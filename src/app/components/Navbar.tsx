@@ -10,7 +10,7 @@ export const Navbar = () => {
 
   const { currentUser, logout } = useProyectoStore();
   const router = useRouter();
-console.log(`Navbar - currentUser: ${currentUser}`);
+
 
   const handleLogout = () => {
     logout();

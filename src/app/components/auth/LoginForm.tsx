@@ -46,7 +46,7 @@ export default function LoginForm() {
       console.log("user after login:", user);
       
       setCurrentUser(user);
-      console.log(user);
+
       
       if (!user) {
         setError("Error al obtener datos del usuario.");
@@ -54,7 +54,6 @@ export default function LoginForm() {
         return;
       }
 
-      console.log("Usuario autenticado:", user);
       router.push("/dashboard");
     } catch {
       handleLoginError( "Error desconocido");

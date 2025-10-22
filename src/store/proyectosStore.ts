@@ -1,3 +1,4 @@
+import { log } from "console";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -32,13 +33,13 @@ interface Store {
     descripcion: string,
     fecha_finalizacion?: string | null
   ) => Promise<void>;
-  eliminarProyecto: (proyectoId: number) => Promise<void>;
+  eliminarProyecto: (proyectoId: number, correo: string) => Promise<void>;
 
   // Recuperar contraseña (falsa)
   resetPassword: (correo: string, nueva_contraseña: string) => Promise<void>;
 }
 
-const API_URL = "https://task-manager-backend-s4ys.onrender.com";
+const API_URL = "https://task-manager-backend-1-ybye.onrender.com";
 
 export const useProyectoStore = create<Store>()(
   persist(
@@ -62,10 +63,10 @@ export const useProyectoStore = create<Store>()(
             throw new Error(errorData.error || "Error al iniciar sesión");
           }
 
-          const {usuario} = await res.json();
-          console.log("user from login:", usuario);
-          
-          set({ currentUser: usuario });
+          const { id, nombre, } = await res.json();
+          // console.log("user from login:", usuario, id, nombre);
+
+          set({ currentUser: { id, correo, nombre } });
         } catch (error) {
           console.error("Error en login:", error);
           throw error;
@@ -82,9 +83,17 @@ export const useProyectoStore = create<Store>()(
         if (!user) return;
 
         try {
-          const res = await fetch(`${API_URL}/proyectos?userId=${user.id}`);
+          const res = await fetch(`${API_URL}/proyectos`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              //Necesito el correo para el backend
+              "x-user-mail": user?.correo,
+            },
+          });
           if (!res.ok) throw new Error("Error al obtener proyectos");
           const data = await res.json();
+          console.log("Fetched proyectos:", data);
           set({ proyectos: data });
         } catch (error) {
           console.error("Error fetching proyectos:", error);
@@ -93,42 +102,82 @@ export const useProyectoStore = create<Store>()(
 
       crearProyecto: async (nombre_proyecto, descripcion, fecha_finalizacion) => {
         const user = get().currentUser;
-        if (!user) return;
+        if (!user?.correo) {
+          console.error("No se encontró el correo del usuario");
+          return;
+        }
 
         try {
           const res = await fetch(`${API_URL}/proyectos`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              "x-user-mail": user.correo,
+            },
             body: JSON.stringify({
-              nombre_proyecto,
+              nombre: nombre_proyecto,
               descripcion,
-              fecha_finalizacion,
-              userId: user.id,
             }),
           });
 
-          if (!res.ok) throw new Error("Error al crear proyecto");
+          if (!res.ok) {
+            const errorData = await res.json();
+            console.error("Error al crear proyecto:", errorData);
+            return;
+          }
 
-          const nuevoProyecto = await res.json();
-          set((state) => ({ proyectos: [...state.proyectos, nuevoProyecto] }));
+          const data = await res.json();
+          console.log("Proyecto creado:", data);
+          return data;
+
         } catch (error) {
-          console.error("Error creating proyecto:", error);
+          console.error("Error de red o fetch:", error);
         }
       },
 
-      eliminarProyecto: async (proyectoId) => {
-        try {
-          const res = await fetch(`${API_URL}/proyectos/${proyectoId}`, {
-            method: "DELETE",
-          });
-          if (!res.ok) throw new Error("Error al eliminar proyecto");
-          set((state) => ({
-            proyectos: state.proyectos.filter((p) => p.id !== proyectoId),
-          }));
-        } catch (error) {
-          console.error("Error deleting proyecto:", error);
-        }
+      // eliminarProyecto: async (proyectoId, correo) => {
+      //   try {
+      //     console.log('Deleting proyecto with id:', proyectoId, 'for user:', correo);
+
+      //     const res = await fetch(`${API_URL}/proyectos/${proyectoId}`, {
+      //       method: "DELETE",
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //         "x-user-mail": correo
+      //       },
+      //     });
+      //     console.log('delete proyecto response:', res);
+      //     if (!res.ok) throw new Error("Error al eliminar proyecto");
+
+
+      //     const proyectosActuales = get().proyectos;
+      //     const proyectosActualizados = proyectosActuales.filter((p) => p.id !== id);
+      //     set({ proyectos: proyectosActualizados });
+      //     console.log('Proyecto with id:', proyectoId, 'deleted successfully');
+      //   } catch (error) {
+      //     console.error("Error deleting proyecto:", error);
+      //   }
+      // },
+      eliminarProyecto: async (id: number, correo: string) => {
+  try {
+    const res = await fetch(`${API_URL}/proyectos/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "x-user-mail": correo,
       },
+    });
+
+    if (!res.ok) throw new Error("Error al eliminar el proyecto");
+
+    // ✅ obtener el estado actual correctamente
+    const proyectosActuales = get().proyectos;
+    const proyectosActualizados = proyectosActuales.filter((p) => p.id !== id);
+    set({ proyectos: proyectosActualizados });
+  } catch (error) {
+    console.error("Error deleting proyecto:", error);
+  }
+},
 
       // ---- RECUPERAR CONTRASEÑA (FALSA) ----
       resetPassword: async (correo, nueva_contraseña) => {
