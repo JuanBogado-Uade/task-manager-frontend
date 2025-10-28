@@ -22,6 +22,7 @@ export default function Dashboard() {
 
   const [isCreating, setIsCreating] = useState(false);
   const [newBoardTitle, setNewBoardTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [creating, setCreating] = useState(false);
 
   // Memorizar proyectos del usuario actual para evitar recomputar 
@@ -42,12 +43,14 @@ export default function Dashboard() {
   // Función para crear proyectos 
   const handleCreateBoard = useCallback(async () => {
     const nombre = newBoardTitle.trim();
-    if (!nombre || !currentUser) return;
+    const descripcion = description.trim();
+    if (!nombre || !currentUser || !descripcion ) return;
 
     setCreating(true);
     try {
-      await crearProyecto(nombre, "Descripción por defecto", null);
+      await crearProyecto(nombre, descripcion, null);
       setNewBoardTitle("");
+      setDescription("");
       setIsCreating(false);
       await fetchProyectos();
     } catch (error) {
@@ -55,7 +58,7 @@ export default function Dashboard() {
     } finally {
       setCreating(false);
     }
-  }, [newBoardTitle, currentUser, crearProyecto]);
+  }, [newBoardTitle, currentUser, crearProyecto, description]);
 
   // Manejo de teclado 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -114,15 +117,15 @@ export default function Dashboard() {
           {userProyectos.map((proyecto) => (
             <Card
               key={proyecto.id}
-              className="p-5 border border-emerald-300/40 bg-white/80 rounded-2xl shadow-sm flex flex-col justify-between"
+              className="p-5 border border-emerald-300/40 bg-white/80 rounded-2xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow"
             >
               <div
                 role="button"
                 tabIndex={0}
-                onClick={() => router.push(`/board/${proyecto.id}`)}
+                onClick={() => router.push(`/proyecto/${proyecto.id}`)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
-                    router.push(`/board/${proyecto.id}`);
+                    router.push(`/proyecto/${proyecto.id}`);
                   }
                 }}
                 className="cursor-pointer"
@@ -150,7 +153,7 @@ export default function Dashboard() {
 
           {/* CREAR TABLERO */}
           {isCreating ? (
-            <Card className="h-36 p-5 flex flex-col gap-3 border border-emerald-300/50 bg-emerald-50/70 rounded-2xl shadow-md">
+            <Card className="h-auto p-5 flex flex-col gap-3 border border-emerald-300/50 bg-emerald-50/70 rounded-2xl shadow-md">
               <Input
                 className="focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 rounded-lg"
                 placeholder="Título del tablero..."
@@ -159,6 +162,15 @@ export default function Dashboard() {
                 onKeyDown={handleKeyDown}
                 autoFocus
                 aria-label="Título del proyecto"
+              />
+              <Input
+                className="focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 rounded-lg"
+                placeholder="Descripcion del tablero..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                onKeyDown={handleKeyDown}
+                autoFocus
+                aria-label="Descripcion del proyecto"
               />
               <div className="flex gap-3 justify-end">
                 <Button
@@ -186,7 +198,7 @@ export default function Dashboard() {
             <Card
               role="button"
               tabIndex={0}
-              className="h-36 cursor-pointer border border-emerald-300/40 bg-emerald-50/70 hover:bg-emerald-100/80 transition-all hover:shadow-lg hover:scale-105 rounded-2xl flex items-center justify-center"
+              className="h-auto cursor-pointer border border-emerald-300/40 bg-emerald-50/70 hover:bg-emerald-100/80 transition-all hover:shadow-lg hover:scale-105 rounded-2xl flex items-center justify-center"
               onClick={() => setIsCreating(true)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
@@ -196,7 +208,7 @@ export default function Dashboard() {
               }}
               aria-label="Crear nuevo tablero"
             >
-              <div className="flex flex-col items-center gap-2 text-emerald-700 hover:text-emerald-900 transition-colors">
+              <div className=" flex flex-col items-center gap-2 text-emerald-700 hover:text-emerald-900 transition-colors">
                 <Plus className="h-9 w-9" />
                 <span className="font-semibold text-base">
                   Crear nuevo tablero

@@ -2,17 +2,6 @@
 import { useState } from "react";
 import PasswordInput from "./PasswordInput";
 import { esContraseñaSegura } from "@/utils/validaciones";
-import ReCAPTCHA from "react-google-recaptcha";
-
-// Declaración global para tipado de grecaptcha
-declare global {
-  interface Window {
-    grecaptcha?: {
-      getResponse: () => string;
-      reset: () => void;
-    };
-  }
-}
 
 interface RegisterFormProps {
   onSuccess?: () => void;
@@ -27,9 +16,6 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [captchaOk, setCaptchaOk] = useState(false);
-
-  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -48,14 +34,6 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       setLoading(false);
       return;
     }
-
-    // Obtener el token del captcha
-    // const captchaResponse = window.grecaptcha?.getResponse() ?? "";
-    // if (!captchaResponse) {
-    //   setError("Por favor completa el captcha.");
-    //   setLoading(false);
-    //   return;
-    // }
 
     try {
       const res = await fetch(
@@ -140,11 +118,6 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
         La contraseña debe tener entre 8 y 20 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.
       </small>
 
-      {/* <ReCAPTCHA
-        sitekey={siteKey}
-        onChange={() => setCaptchaOk(true)}
-        onExpired={() => setCaptchaOk(false)}
-      /> */}
 
       <button
         type="submit"

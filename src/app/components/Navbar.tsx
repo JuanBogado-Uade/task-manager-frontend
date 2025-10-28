@@ -35,7 +35,7 @@ export const Navbar = () => {
             <>
   {currentUser && (
                 <span className="text-sm">
-                  Hola, <strong>{JSON.stringify(currentUser)}</strong>
+                  Hola, <strong>{JSON.stringify(currentUser.nombre)}</strong>
                 </span>
               )
               }              <Button
