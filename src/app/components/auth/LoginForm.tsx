@@ -2,10 +2,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PasswordInput from "./PasswordInput";
-// import ReCAPTCHA from "react-google-recaptcha";
 import { useProyectoStore } from "@/store/proyectosStore";
 
-// Declaración global para tipado de grecaptcha
+interface LoginFormProps {
+  lang: "ar" | "br"; // recibiendo idioma
+}
+
 declare global {
   interface Window {
     grecaptcha?: {
@@ -15,7 +17,28 @@ declare global {
   }
 }
 
-export default function LoginForm() {
+const translations = {
+  ar: {
+    email: "Correo electrónico",
+    password: "Contraseña",
+    login: "Iniciar sesión",
+    loggingIn: "Iniciando sesión...",
+    blocked: "Demasiados intentos fallidos. Intenta más tarde.",
+    unknownError: "Error desconocido",
+  },
+  br: {
+    email: "E-mail",
+    password: "Senha",
+    login: "Entrar",
+    loggingIn: "Entrando...",
+    blocked: "Muitas tentativas falharam. Tente novamente mais tarde.",
+    unknownError: "Erro desconhecido",
+  },
+};
+
+export default function LoginForm({ lang }: LoginFormProps) {
+  const t = translations[lang];
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [intentos, setIntentos] = useState(0);
@@ -27,7 +50,7 @@ export default function LoginForm() {
 
   async function handleLogin(formData: FormData) {
     if (bloqueado) {
-      setError("Demasiados intentos fallidos. Intenta más tarde.");
+      setError(t.blocked);
       return;
     }
 
@@ -38,25 +61,20 @@ export default function LoginForm() {
     const contraseña = formData.get("contraseña") as string;
 
     try {
-      // Llamamos al store directamente
       await login(correo, contraseña);
 
-      // Si login fue exitoso, obtenemos el user desde el store
       const user = useProyectoStore.getState().currentUser;
-      console.log("user after login:", user);
-      
       setCurrentUser(user);
 
-      
       if (!user) {
-        setError("Error al obtener datos del usuario.");
+        setError(t.unknownError);
         setLoading(false);
         return;
       }
 
       router.push("/dashboard");
     } catch {
-      handleLoginError( "Error desconocido");
+      handleLoginError(t.unknownError);
     } finally {
       setLoading(false);
     }
@@ -71,10 +89,6 @@ export default function LoginForm() {
     setError(message);
   }
 
-  // useEffect(() => {
-  //   console.log("reCAPTCHA siteKey:", process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY);
-  // }, []);
-
   return (
     <form
       onSubmit={(e) => {
@@ -84,17 +98,14 @@ export default function LoginForm() {
       }}
       className="flex flex-col gap-4"
     >
-      <label
-        htmlFor="correo"
-        className="block text-sm font-medium text-gray-700"
-      >
-        Correo electrónico
+      <label htmlFor="correo" className="block text-sm font-medium text-gray-700">
+        {t.email}
       </label>
       <input
         id="correo"
         name="correo"
         type="email"
-        placeholder="Ejemplo@uade.com"
+        placeholder={t.email}
         required
         disabled={loading}
         className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:italic"
@@ -103,16 +114,10 @@ export default function LoginForm() {
       <PasswordInput
         id="contraseña"
         name="contraseña"
-        placeholder="Introduce tu contraseña"
+        placeholder={t.password}
         disabled={loading}
         required
       />
-
-      {/* <ReCAPTCHA
-        sitekey={siteKey}
-        onChange={() => setCaptchaOk(true)}
-        onExpired={() => setCaptchaOk(false)}
-      /> */}
 
       <button
         type="submit"
@@ -121,7 +126,7 @@ export default function LoginForm() {
           loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
         }`}
       >
-        {loading ? "Iniciando sesión..." : "Iniciar sesión"}
+        {loading ? t.loggingIn : t.login}
       </button>
 
       {error && <p className="text-red-600 text-sm">{error}</p>}

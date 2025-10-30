@@ -3,34 +3,63 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useProyectoStore } from "@/store/proyectosStore";
-import { Navbar } from "@/app/components/Navbar";
+import Header from "@/app/components/Header";
 import { Plus } from "lucide-react";
 import { Card } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 
-export default function Dashboard() {
-  const router = useRouter();
+const translations = {
+  ar: {
+    title: "Tus tableros",
+    subtitle: "Organiza tus proyectos y tareas de manera eficiente",
+    noBoards: "No tienes tableros todavía. Crea uno nuevo para comenzar.",
+    create: "Crear",
+    creating: "Creando...",
+    cancel: "Cancelar",
+    delete: "Eliminar",
+    createNew: "Crear nuevo tablero",
+    placeholderTitle: "Título del tablero...",
+    placeholderDesc: "Descripción del tablero...",
+    login: "Iniciar sesión",
+    register: "Registro",
+  },
+  br: {
+    title: "Seus quadros",
+    subtitle: "Organize seus projetos e tarefas de forma eficiente",
+    noBoards: "Você ainda não tem quadros. Crie um novo para começar.",
+    create: "Criar",
+    creating: "Criando...",
+    cancel: "Cancelar",
+    delete: "Excluir",
+    createNew: "Criar novo quadro",
+    placeholderTitle: "Título do quadro...",
+    placeholderDesc: "Descrição do quadro...",
+    login: "Entrar",
+    register: "Registro",
+  },
+};
 
-  const {
-    proyectos,
-    crearProyecto,
-    fetchProyectos,
-    eliminarProyecto,
-    currentUser,
-  } = useProyectoStore();
+export default function DashboardPage() {
+  const router = useRouter();
+  const { proyectos, crearProyecto, fetchProyectos, eliminarProyecto, currentUser } =
+    useProyectoStore();
+
+  const [lang, setLang] = useState<"ar" | "br">("ar");
+  const t = translations[lang];
 
   const [isCreating, setIsCreating] = useState(false);
   const [newBoardTitle, setNewBoardTitle] = useState("");
   const [description, setDescription] = useState("");
   const [creating, setCreating] = useState(false);
 
-  // Memorizar proyectos del usuario actual para evitar recomputar 
+  // Filtra los proyectos del usuario actual
   const userProyectos = useMemo(() => {
     if (!currentUser) return [];
     return proyectos;
   }, [proyectos, currentUser]);
 
+  // Carga los proyectos al iniciar
   useEffect(() => {
     if (!currentUser) return;
     fetchProyectos().catch((err) =>
@@ -38,13 +67,11 @@ export default function Dashboard() {
     );
   }, [currentUser, fetchProyectos]);
 
-  console.log(proyectos);
-
-  // Función para crear proyectos 
+  // Crear proyecto
   const handleCreateBoard = useCallback(async () => {
     const nombre = newBoardTitle.trim();
     const descripcion = description.trim();
-    if (!nombre || !currentUser || !descripcion ) return;
+    if (!nombre || !currentUser || !descripcion) return;
 
     setCreating(true);
     try {
@@ -58,16 +85,7 @@ export default function Dashboard() {
     } finally {
       setCreating(false);
     }
-  }, [newBoardTitle, currentUser, crearProyecto, description]);
-
-  // Manejo de teclado 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") handleCreateBoard();
-    if (e.key === "Escape") {
-      setIsCreating(false);
-      setNewBoardTitle("");
-    }
-  };
+  }, [newBoardTitle, description, currentUser, crearProyecto, fetchProyectos]);
 
   // Eliminar proyecto
   const handleDelete = useCallback(
@@ -78,146 +96,144 @@ export default function Dashboard() {
       }
       if (!confirm("¿Eliminar este proyecto?")) return;
       try {
-        console.log( "El correo  ",currentUser.correo);
-        
         await eliminarProyecto(id, currentUser.correo);
       } catch (err) {
         console.error("Error eliminando proyecto:", err);
       }
       await fetchProyectos();
     },
-    [eliminarProyecto, currentUser]
+    [eliminarProyecto, currentUser, fetchProyectos]
   );
 
+  // Crear con teclado
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") handleCreateBoard();
+    if (e.key === "Escape") {
+      setIsCreating(false);
+      setNewBoardTitle("");
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-avocado-200 text-emerald-950">
-      <Navbar />
+    <>
+      <Header lang={lang} setLang={setLang} t={{ login: t.login, register: t.register }} />
 
-      <main className="container mx-auto px-4 py-10">
-        <header className="mb-10 text-center md:text-left">
-          <h1 className="text-4xl font-extrabold mb-3 text-emerald-900 drop-shadow-sm">
-            Tus tableros
-          </h1>
-          <p className="text-emerald-800/70 text-lg">
-            Organiza tus proyectos y tareas de manera eficiente
-          </p>
-        </header>
+      <main className="min-h-screen bg-avocado-200 text-emerald-950">
+        <div className="container mx-auto px-4 py-10">
+          <header className="mb-10 text-center md:text-left">
+            <h1 className="text-4xl font-extrabold mb-3 text-emerald-900 drop-shadow-sm">
+              {t.title}
+            </h1>
+            <p className="text-emerald-800/70 text-lg">{t.subtitle}</p>
+          </header>
 
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {/* SI ESTA VACIO MUESTRA ESTO */}
-          {userProyectos.length === 0 && (
-            <Card className="p-8 border border-emerald-300/40 bg-emerald-50/70 rounded-2xl shadow-sm">
-              <p className="text-emerald-800/70 text-sm">
-                No tienes tableros todavía. Crea uno nuevo para comenzar.
-              </p>
-            </Card>
-          )}
+          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {/* Si no hay proyectos */}
+            {userProyectos.length === 0 && (
+              <Card className="p-8 border border-emerald-300/40 bg-emerald-50/70 rounded-2xl shadow-sm">
+                <p className="text-emerald-800/70 text-sm">{t.noBoards}</p>
+              </Card>
+            )}
 
-          {/* LISTADO DE PROYECTOS */}
-          {userProyectos.map((proyecto) => (
-            <Card
-              key={proyecto.id}
-              className="p-5 border border-emerald-300/40 bg-white/80 rounded-2xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow"
-            >
-              <div
+            {/* Lista de proyectos */}
+            {userProyectos.map((proyecto) => (
+              <Card
+                key={proyecto.id}
+                className="p-5 border border-emerald-300/40 bg-white/80 rounded-2xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow"
+              >
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => router.push(`/proyecto/${proyecto.id}`)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ")
+                      router.push(`/proyecto/${proyecto.id}`);
+                  }}
+                  className="cursor-pointer"
+                >
+                  <h3 className="text-lg font-semibold text-emerald-900">
+                    {proyecto.nombre_proyecto}
+                  </h3>
+                  <p className="text-sm text-emerald-700/80 mt-2 line-clamp-2">
+                    {proyecto.descripcion}
+                  </p>
+                </div>
+
+                <div className="mt-4 flex justify-end">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleDelete(proyecto.id)}
+                    className="text-emerald-700 hover:bg-emerald-100 rounded-md"
+                  >
+                    {t.delete}
+                  </Button>
+                </div>
+              </Card>
+            ))}
+
+            {/* Crear nuevo tablero */}
+            {isCreating ? (
+              <Card className="h-auto p-5 flex flex-col gap-3 border border-emerald-300/50 bg-emerald-50/70 rounded-2xl shadow-md">
+                <Input
+                  className="focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 rounded-lg"
+                  placeholder={t.placeholderTitle}
+                  value={newBoardTitle}
+                  onChange={(e) => setNewBoardTitle(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  autoFocus
+                />
+                <Input
+                  className="focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 rounded-lg"
+                  placeholder={t.placeholderDesc}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                />
+                <div className="flex gap-3 justify-end">
+                  <Button
+                    size="sm"
+                    onClick={handleCreateBoard}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-md transition-all"
+                    disabled={creating}
+                  >
+                    {creating ? t.creating : t.create}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      setIsCreating(false);
+                      setNewBoardTitle("");
+                    }}
+                    className="text-emerald-700 hover:bg-emerald-200/60 rounded-md transition-colors"
+                  >
+                    {t.cancel}
+                  </Button>
+                </div>
+              </Card>
+            ) : (
+              <Card
                 role="button"
                 tabIndex={0}
-                onClick={() => router.push(`/proyecto/${proyecto.id}`)}
+                className="h-auto cursor-pointer border border-emerald-300/40 bg-emerald-50/70 hover:bg-emerald-100/80 transition-all hover:shadow-lg hover:scale-105 rounded-2xl flex items-center justify-center"
+                onClick={() => setIsCreating(true)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
-                    router.push(`/proyecto/${proyecto.id}`);
+                    e.preventDefault();
+                    setIsCreating(true);
                   }
                 }}
-                className="cursor-pointer"
               >
-                <h3 className="text-lg font-semibold text-emerald-900">
-                  {proyecto.nombre_proyecto}
-                </h3>
-                <p className="text-sm text-emerald-700/80 mt-2 line-clamp-2">
-                  {proyecto.descripcion}
-                </p>
-              </div>
-
-              <div className="mt-4 flex justify-end">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => handleDelete(proyecto.id)}
-                  className="text-emerald-700 hover:bg-emerald-100 rounded-md"
-                >
-                  Eliminar
-                </Button>
-              </div>
-            </Card>
-          ))}
-
-          {/* CREAR TABLERO */}
-          {isCreating ? (
-            <Card className="h-auto p-5 flex flex-col gap-3 border border-emerald-300/50 bg-emerald-50/70 rounded-2xl shadow-md">
-              <Input
-                className="focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 rounded-lg"
-                placeholder="Título del tablero..."
-                value={newBoardTitle}
-                onChange={(e) => setNewBoardTitle(e.target.value)}
-                onKeyDown={handleKeyDown}
-                autoFocus
-                aria-label="Título del proyecto"
-              />
-              <Input
-                className="focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 rounded-lg"
-                placeholder="Descripcion del tablero..."
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                onKeyDown={handleKeyDown}
-                autoFocus
-                aria-label="Descripcion del proyecto"
-              />
-              <div className="flex gap-3 justify-end">
-                <Button
-                  size="sm"
-                  onClick={handleCreateBoard}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-md transition-all"
-                  disabled={creating}
-                >
-                  {creating ? "Creando..." : "Crear"}
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => {
-                    setIsCreating(false);
-                    setNewBoardTitle("");
-                  }}
-                  className="text-emerald-700 hover:bg-emerald-200/60 rounded-md transition-colors"
-                >
-                  Cancelar
-                </Button>
-              </div>
-            </Card>
-          ) : (
-            <Card
-              role="button"
-              tabIndex={0}
-              className="h-auto cursor-pointer border border-emerald-300/40 bg-emerald-50/70 hover:bg-emerald-100/80 transition-all hover:shadow-lg hover:scale-105 rounded-2xl flex items-center justify-center"
-              onClick={() => setIsCreating(true)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setIsCreating(true);
-                }
-              }}
-              aria-label="Crear nuevo tablero"
-            >
-              <div className=" flex flex-col items-center gap-2 text-emerald-700 hover:text-emerald-900 transition-colors">
-                <Plus className="h-9 w-9" />
-                <span className="font-semibold text-base">
-                  Crear nuevo tablero
-                </span>
-              </div>
-            </Card>
-          )}
-        </section>
+                <div className="flex flex-col items-center gap-2 text-emerald-700 hover:text-emerald-900 transition-colors">
+                  <Plus className="h-9 w-9" />
+                  <span className="font-semibold text-base">{t.createNew}</span>
+                </div>
+              </Card>
+            )}
+          </section>
+        </div>
       </main>
-    </div>
+    </>
   );
 }
