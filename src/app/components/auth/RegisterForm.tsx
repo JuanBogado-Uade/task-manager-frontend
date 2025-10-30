@@ -4,10 +4,40 @@ import PasswordInput from "./PasswordInput";
 import { esContraseñaSegura } from "@/utils/validaciones";
 
 interface RegisterFormProps {
+  lang: "ar" | "br";
   onSuccess?: () => void;
 }
 
-export default function RegisterForm({ onSuccess }: RegisterFormProps) {
+const translations = {
+  ar: {
+    email: "Correo electrónico",
+    username: "Nombre de usuario",
+    password: "Contraseña",
+    register: "Registrarme",
+    registering: "Registrando...",
+    success: "¡Registro exitoso!",
+    successDesc: "Ahora puedes iniciar sesión con tus credenciales.",
+    passwordReq:
+      "La contraseña debe tener entre 8 y 20 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.",
+    connectionError: "Error de conexión. Inténtalo nuevamente.",
+  },
+  br: {
+    email: "E-mail",
+    username: "Nome de usuário",
+    password: "Senha",
+    register: "Registrar-se",
+    registering: "Registrando...",
+    success: "Registro bem-sucedido!",
+    successDesc: "Agora você pode entrar com suas credenciais.",
+    passwordReq:
+      "A senha deve ter entre 8 e 20 caracteres, incluindo letras maiúsculas, minúsculas, números e um caractere especial.",
+    connectionError: "Erro de conexão. Tente novamente.",
+  },
+};
+
+export default function RegisterForm({ lang, onSuccess }: RegisterFormProps) {
+  const t = translations[lang];
+
   const [formData, setFormData] = useState({
     correo: "",
     nombre: "",
@@ -41,14 +71,14 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...formData}),
+          body: JSON.stringify({ ...formData }),
         }
       );
 
       if (!res.ok) {
         setLoading(false);
         const errorResponse = await res.json();
-        const errorMessage = errorResponse.error || "Error desconocido";
+        const errorMessage = errorResponse.error || t.connectionError;
         setError(errorMessage);
         return;
       }
@@ -56,7 +86,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       setSuccess(true);
       if (onSuccess) onSuccess();
     } catch {
-      setError("Error de conexión. Inténtalo nuevamente.");
+      setError(t.connectionError);
     } finally {
       setLoading(false);
     }
@@ -65,12 +95,8 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
   if (success) {
     return (
       <div className="bg-white shadow-lg rounded-2xl p-8 max-w-md w-full text-center">
-        <h1 className="text-2xl font-bold mb-4 text-green-700">
-          ¡Registro exitoso!
-        </h1>
-        <p className="mb-6 text-gray-700">
-          Ahora puedes iniciar sesión con tus credenciales.
-        </p>
+        <h1 className="text-2xl font-bold mb-4 text-green-700">{t.success}</h1>
+        <p className="mb-6 text-gray-700">{t.successDesc}</p>
       </div>
     );
   }
@@ -78,12 +104,12 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
   return (
     <form onSubmit={handleRegister} className="flex flex-col gap-2">
       <label htmlFor="correo" className="text-sm font-medium text-gray-700">
-        Correo electrónico
+        {t.email}
       </label>
       <input
         name="correo"
         type="email"
-        placeholder="Ejemplo@uade.com"
+        placeholder={t.email}
         required
         value={formData.correo}
         onChange={handleInputChange}
@@ -92,12 +118,12 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       />
 
       <label htmlFor="nombre" className="text-sm font-medium text-gray-700">
-        Nombre de usuario
+        {t.username}
       </label>
       <input
         name="nombre"
         type="text"
-        placeholder="Steve"
+        placeholder={t.username}
         required
         value={formData.nombre}
         onChange={handleInputChange}
@@ -108,25 +134,22 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       <PasswordInput
         id="contraseña"
         name="contraseña"
-        placeholder="Introduce tu contraseña"
+        placeholder={t.password}
         disabled={loading}
         required
         value={formData.contraseña}
         onChange={handleInputChange}
       />
-      <small className="text-gray-500 text-sm">
-        La contraseña debe tener entre 8 y 20 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.
-      </small>
-
+      <small className="text-gray-500 text-sm">{t.passwordReq}</small>
 
       <button
         type="submit"
-        disabled={loading }
+        disabled={loading}
         className={`bg-blue-600 text-white p-2 rounded-lg transition ${
-          loading  ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
+          loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
         }`}
       >
-        {loading ? "Registrando..." : "Registrarme"}
+        {loading ? t.registering : t.register}
       </button>
 
       {error && <p className="text-red-600 text-center text-sm">{error}</p>}
